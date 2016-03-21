@@ -319,23 +319,23 @@ class Specimen extends AppModel {
       $family = $this->Family->find('first',array('conditions'=>array('name'=>$wal['name'])));
       foreach($wal as $key=>$val){
         if (is_int($key)){ //not family name
-          if (!($specimen = $this->Specimen->find('first',array('conditions'=>array('filename'=>$val['filename']))))){
-            $this->Specimen->create();
-            $this->Specimen->save(array(
-              'genus'=>$val['genus'],
-              'species'=>$val['species'],
-              'family'=>$val['family'],
-              'date_found'=>$val['date_found'],
-              'location'=>$val['location'],
-              'state'=>($val['state']==null)?("XX"):$val['state'],
-              'iso'=>$val['iso'],
-              'is_wild'=>$val['is_wild'],
-              'filename'=>$val['filename'],
-              'notes'=>$val['notes']
-            ));
-            $new_spec_id = $this->Specimen->id;
-            debug("Specimen added: ".$val['filename']);
-            if ($val['species'] != "sp" && $val['species'] != "sp."){
+          if ($val['species'] != "sp" && $val['species'] != "sp." && $val['species'] != "species"){
+            if (!($specimen = $this->Specimen->find('first',array('conditions'=>array('filename'=>$val['filename']))))){
+              $this->Specimen->create();
+              $this->Specimen->save(array(
+                'genus'=>$val['genus'],
+                'species'=>$val['species'],
+                'family'=>$val['family'],
+                'date_found'=>$val['date_found'],
+                'location'=>$val['location'],
+                'state'=>($val['state']==null)?("XX"):$val['state'],
+                'iso'=>$val['iso'],
+                'is_wild'=>$val['is_wild'],
+                'filename'=>$val['filename'],
+                'notes'=>$val['notes']
+              ));
+              $new_spec_id = $this->Specimen->id;
+              debug("Specimen added: ".$val['filename']);
               if ($spec = $this->Species->find('first',array('conditions'=>array('genus'=>$val['genus'],'species'=>$val['species'])))){
                 $this->Specimen->read(null,$new_spec_id);
                 $this->Specimen->set('species_id',$spec['Species']['id']);
@@ -367,34 +367,36 @@ class Specimen extends AppModel {
                 $this->Specimen->save();
                 debug("New Species: ".$val['genus']." ".$val['species']);
               }
-            }
-          }else{ //specimen already in db
-            $this->Specimen->read(null,$specimen['Specimen']['id']);
-            $this->Specimen->set(array(
-              'date_found'=>$val['date_found'],
-              'location'=>$val['location'],
-              'state'=>$val['state'],
-              'is_wild'=>$val['is_wild'],
-              'notes'=>$val['notes']
-            ));
-            $this->Specimen->save();
-            $lowest_date = date("Y-m-d");
-            $spec_is_wild = 0;
-            foreach($this->Specimen->find('all',array('conditions'=>array('species_id'=>$specimen['Specimen']['species_id']))) as $ral){
-              $t = explode("-",$ral['Specimen']['date_found']);
-              $u = explode("-",$lowest_date);
-              if (mktime(0,0,1,$t[1],$t[2],$t[0]) < mktime(0,0,1,$u[1],$u[2],$u[0])){
-                $lowest_date = $ral['Specimen']['date_found'];
+            }else{ //specimen already in db
+              $this->Specimen->read(null,$specimen['Specimen']['id']);
+              $this->Specimen->set(array(
+                'date_found'=>$val['date_found'],
+                'location'=>$val['location'],
+                'state'=>$val['state'],
+                'is_wild'=>$val['is_wild'],
+                'notes'=>$val['notes']
+              ));
+              $this->Specimen->save();
+              $lowest_date = date("Y-m-d");
+              $spec_is_wild = 0;
+              foreach($this->Specimen->find('all',array('conditions'=>array('species_id'=>$specimen['Specimen']['species_id']))) as $ral){
+                $t = explode("-",$ral['Specimen']['date_found']);
+                $u = explode("-",$lowest_date);
+                if (mktime(0,0,1,$t[1],$t[2],$t[0]) < mktime(0,0,1,$u[1],$u[2],$u[0])){
+                  $lowest_date = $ral['Specimen']['date_found'];
+                }
+                if ($ral['Specimen']['is_wild'])
+                  $spec_is_wild = 1;
               }
-              if ($ral['Specimen']['is_wild'])
-                $spec_is_wild = 1;
+              $this->Species->read(null,$specimen['Specimen']['species_id']);
+              $this->Species->set(array(
+                'date_found'=>$lowest_date,
+                'is_wild'=>$spec_is_wild
+              ));
+              $this->Species->save();
             }
-            $this->Species->read(null,$specimen['Specimen']['species_id']);
-            $this->Species->set(array(
-              'date_found'=>$lowest_date,
-              'is_wild'=>$spec_is_wild
-            ));
-            $this->Species->save();
+          }else{ //Unknown species
+            $this->Unknown->update_with_info($val);
           }
         }
       } // end foreach
@@ -590,7 +592,7 @@ class Specimen extends AppModel {
               'state'=>$state,
               'iso'=>$country_code,
               'is_wild'=>($info[3] == "W")?1:0,
-              'filename'=>(($species_name[1]=="sp")?"aa unknown/":"").$info[1].".jpg",
+              'filename'=>(($species_name[1]=="sp")?"aa unknown/":"")."sp.jpg",
               'notes'=>null
             ));
           }

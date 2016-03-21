@@ -19,7 +19,7 @@ Click on a column to sort:
     <td><?=$val['phydiv']?></td>
     <td><?=$val['family_name']?></td>
     <td><?=$val['date']?></td>
-    <td><?=($val['state']=="XX")?"":$val['state']?></td>
+    <td><?=($val['state']=="XX")?"--":$val['state']?></td>
     <td><?=$val['iso']?></td>
     <td><?=$val['is_wild']?></td>
   </tr>

@@ -190,9 +190,6 @@ class SearchController extends AppController {
       $to = date("Y-m-d",strtotime($_GET['end_date']));
     }
     if ($this->request->is("post") || (count($_GET) > 0)){
-      
-      //debug($_POST);
-      
       $cmp_phydiv_name = array(); //list of divisions and phyla
       if ($this->request->is("post")){
         $from = ($_POST['start_date'] != "")?date("Y-m-d",strtotime($_POST['start_date'])):"2003-08-29";
@@ -326,6 +323,15 @@ class SearchController extends AppController {
         foreach($val as $wal){
           array_push($spec_list,$wal);
         }
+      }
+      
+      unset($spec_list_cond['OR']['species LIKE']);
+      unset($spec_list_cond['species_id']);
+      unset($spec_list_cond['species LIKE']);
+      
+      foreach($this->Unknown->find('all',array('conditions'=>$spec_list_cond)) as $val){
+        $val['Unknown']['species'] = "sp.";
+        array_push($spec_list,$val['Unknown']);
       }
       
       foreach($spec_list as $val){
