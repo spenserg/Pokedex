@@ -16,7 +16,7 @@ class Family extends AppModel {
   
   function get_by_name($name){
     if (!($cc = $this->find('first',array('conditions'=>array('name'=>$name)))))
-      return null;
+      $cc = $this->find('first',array('conditions'=>array('name'=>array_shift(explode(" ",$name)))));
     return $cc['Family'];
   }
   

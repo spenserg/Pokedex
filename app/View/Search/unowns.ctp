@@ -14,7 +14,9 @@
 <?php foreach($xal as $yal){ ?>
         <tr>
           <td>
-            <img src="<?=$yal['filename']?>" style="width:100px;height:100px;">
+            <a href="/search/view?dir=<?=APP."webroot".$yal['filename']?>">
+              <img src="<?=$yal['filename']?>" style="width:100px;height:100px;">
+            </a>         
           </td>
           <td><?=$yal['genus']?> sp.</td>
           <td><?=date("M d, Y",strtotime($yal['date_found']))?></td>

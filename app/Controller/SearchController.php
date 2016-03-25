@@ -144,10 +144,19 @@ class SearchController extends AppController {
     if (!isset($_GET['dir']) || !file_exists($_GET['dir']) || !getimagesize($_GET['dir']) ? 1 : 0)
       $file_error = 1;
     $name_arr = explode(" ",array_shift(explode(".",array_pop(explode("/",$_GET['dir'])))));
-    $info = $this->Specimen->find('all',array('conditions'=>array('genus'=>$name_arr[0],'species'=>$name_arr[1])));
+    if (!($info = $this->Specimen->find('all',array('conditions'=>array('genus'=>$name_arr[0],'species'=>$name_arr[1]))))){
+      //Unknown
+      $file_arr = explode("/",$_GET['dir']);
+      $temp_fam = $this->Family->get_by_name(($file_arr[count($file_arr)-2]=="aa unknown")?$file_arr[count($file_arr)-3]:$file_arr[count($file_arr)-2]);
+      $counter = 0;
+      foreach($this->Unknown->find('all',array('conditions'=>array('genus'=>$name_arr[0],'family'=>$temp_fam['id']))) as $val){
+        $info[$counter]['Specimen'] = $val['Unknown'];
+        $counter++;
+      }
+    }
     foreach($info as $key=>$val){
       $info[$key]['Specimen']['country'] = $this->Country->get_name($val['Specimen']['iso']);
-      $info[$key]['Specimen']['filename_for_calc'] = array_pop(explode("/",$info[$key]['Specimen']['filename']));
+      debug($info[$key]['Specimen']['filename_for_calc'] = array_pop(explode("/",$info[$key]['Specimen']['filename'])));
     }
     if ($species = $this->Species->find('first',array('conditions'=>array('genus'=>$name_arr[0],'species'=>$name_arr[1])))){
       $this->set('common_name',$species['Species']['common_name']);
@@ -156,7 +165,7 @@ class SearchController extends AppController {
     }
     $this->set('spec_list',$info);
     $this->set('fam_dir',$this->Family->get_dir($info[0]['Specimen']['family'],false));
-    $this->set('name',$name_arr[0]." ".$name_arr[1]);
+    $this->set('name',$name_arr[0]." ".(($name_arr[1]=="sp")?"sp.":$name_arr[1]));
     $this->set('file_error',$file_error);
   }
   
