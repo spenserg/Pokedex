@@ -20,6 +20,12 @@ class Family extends AppModel {
     return $cc['Family'];
   }
   
+  function get_nickname($id){
+    if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
+      return null;
+    return ($cc['Family']['nickname']=="")?NULL:$cc['Family']['nickname'];
+  }
+  
   function get_dir($id,$get_full_dir = true){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;

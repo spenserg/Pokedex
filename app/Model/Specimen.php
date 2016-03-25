@@ -115,7 +115,7 @@ class Specimen extends AppModel {
     }
   }
   
-  function update_db(){
+  function update_db($update_all = 0){
     $root_dir = APP."webroot".DS."img".DS."pokedex".DS;
     $new_deleted = array();
     $new_added = array();
@@ -153,8 +153,7 @@ class Specimen extends AppModel {
                 }else{
                   $cur_ord_id = $cur_ord['Order']['id'];
                 }
-                if (filemtime($root_dir.$kingdom.DS.$phydiv.DS.$ord_fold_name.DS."aa ".$order_name." pic info copy.html") > strtotime($cur_ord['Order']['updated'])){
-                  debug("order updated: ".$cur_ord['Order']['name']);
+                if ($update_all || filemtime($root_dir.$kingdom.DS.$phydiv.DS.$ord_fold_name.DS."aa ".$order_name." pic info copy.html") > strtotime($cur_ord['Order']['updated'])){
                   foreach(scandir($root_dir.$kingdom.DS.$phydiv.DS.$ord_fold_name) as $family){
                     if (substr($family,0,1) != "."){
                       if (substr($family,0,2) != "aa"){
@@ -181,7 +180,7 @@ class Specimen extends AppModel {
                           $info = new SplfileInfo($root_dir.$kingdom.DS.$phydiv.DS.$order.DS.$family);
                           if($info->getExtension() == "html"){ //aa blah pic info copy
                             $order_obj = $this->Order->get_by_name($order);
-                            if ($this->Order->needs_update($order_obj,$root_dir.$kingdom.DS.$phydiv.DS.$order.DS.$family)){
+                            if ($update_all || $this->Order->needs_update($order_obj,$root_dir.$kingdom.DS.$phydiv.DS.$order.DS.$family)){
                               $this->update_db_with_info($root_dir.$kingdom.DS.$phydiv.DS.$order.DS.$family);
                               $this->Order->read(null,$order_obj['id']);
                               $this->Order->set('updated',date("Y-m-d H:i:s",filemtime($root_dir.$kingdom.DS.$phydiv.DS.$order.DS.$family)));
@@ -247,7 +246,7 @@ class Specimen extends AppModel {
                       $cur_ord_id = $cur_ord['Order']['id'];
                     }
                     
-                    if (filemtime($root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS."aa ".$order_name." pic info copy.html") > strtotime($cur_ord['Order']['updated'])){
+                    if ($update_all || filemtime($root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS."aa ".$order_name." pic info copy.html") > strtotime($cur_ord['Order']['updated'])){
                     
                     foreach(scandir($root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name) as $family){
                       if (substr($family,0,1) != "."){
@@ -275,7 +274,7 @@ class Specimen extends AppModel {
                             $info = new SplfileInfo($root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS.$family);
                             if ($info->getExtension() == "html"){ //aa blah pic info copy
                               $order_obj = $this->Order->get_by_name($order_name);
-                              if ($this->Order->needs_update($order_obj,$root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS.$family)){
+                              if ($update_all || $this->Order->needs_update($order_obj,$root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS.$family)){
                                 $this->update_db_with_info($root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS.$family);
                                 $this->Order->read(null,$order_obj['id']);
                                 $this->Order->set('updated',date("Y-m-d H:i:s",filemtime($root_dir.$kingdom.DS.$phydiv.DS.$cls_fold_name.DS.$ord_fold_name.DS.$family)));
@@ -521,6 +520,10 @@ class Specimen extends AppModel {
     $cur_species = "";
     
     preg_match("/<body>([\s\S]*)<\/body>/",file_get_contents($filename),$matches);
+    foreach($matches as $val){
+      //replace dash with hyphen in genus or species name
+      $matches = str_replace('<span class="s2">–</span>','–',$matches);
+    }
     preg_match_all('/<p class="p([\s\S]*)<\/p>/U',$matches[1],$match_fams);
     foreach($match_fams[1] as $val){
       if (substr($val,0,1) == "1"){
@@ -583,6 +586,15 @@ class Specimen extends AppModel {
             }
             preg_match('/([\s\S]*) ([0-9]*), ([0-9][0-9][0-9][0-9])/',$info[2],$date_arr);
             $species_name = explode(" ",$info[1]);
+            if (count($species_name) != 2){
+              //Species name has multiple words (usually cultivars)
+              $temp_spec_name = "";
+              foreach($species_name as $ley=>$ual){
+                if ($ley != 0)
+                  $temp_spec_name .= $ual." ";
+              }
+              $species_name[1] = trim($temp_spec_name," ");
+            }
             array_push($fam_arr,array(
               'genus'=>$species_name[0],
               'species'=>$species_name[1],
@@ -592,7 +604,7 @@ class Specimen extends AppModel {
               'state'=>$state,
               'iso'=>$country_code,
               'is_wild'=>($info[3] == "W")?1:0,
-              'filename'=>(($species_name[1]=="sp")?"aa unknown/":"")."sp.jpg",
+              'filename'=>(($species_name[1]=="sp")?"aa unknown/":"").$species_name[0]." ".(($species_name[1]=="sp.")?"sp":$species_name[1]).".jpg",
               'notes'=>null
             ));
           }

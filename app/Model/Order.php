@@ -58,6 +58,12 @@ class Order extends AppModel {
       return null;
     return $this->ClassDiv->get_by_id($cc['Order']['class']);
   }
+
+  function get_nickname($id){
+    if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
+      return null;
+    return ($cc['Order']['nickname']=="")?NULL:$cc['Order']['nickname'];
+  }
   
   function has_phylum($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))

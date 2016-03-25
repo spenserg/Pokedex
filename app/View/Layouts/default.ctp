@@ -106,6 +106,7 @@
             <li><a href="/search/browse">Browse</a></li>
             <li><a href="/search/stats">Stats</a></li>
             <li><a href="/search/gallery">Gallery</a></li>
+            <li><a href="/search/unowns">Unowns</a></li>
             <li><a href="/search/article_work">Article Info</a></li>
             <?php if($is_logged_in){ ?>
             <li><a href="/login/logout">Log Out</a></li>

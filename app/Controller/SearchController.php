@@ -11,11 +11,11 @@ class SearchController extends AppController {
   }
   
   public function index(){    
-    $this->Specimen->update_db();
+    $this->Specimen->update_db(1);
     //$this->Species->update_common_names();
     
     //debug($this->Specimen->find('all',array('conditions'=>array('state'=>null))));
-    //debug($this->Specimen->get_info_regex(APP."webroot/img/pokedex/zz animals/Chordata/Actinopterygii (Bony Fishies)/Anguilliformes/aa Anguilliformes pic info copy.html"));
+    //debug($this->Specimen->get_info_regex(APP."webroot/img/pokedex/zz animals/Chordata/Actinopterygii (Bony Fishies)/Mugiliformes/aa Mugiliformes pic info copy.html"));
     //debug(file_get_contents(APP."webroot".DS."img".DS."pokedex".DS."testfile copy.html"));
                 
     $this->set('caught',count($this->Species->find('all',array('conditions'=>array('is_wild'=>1)))));
@@ -23,6 +23,10 @@ class SearchController extends AppController {
     
     //debug($this->Family->get_spider_fams());
     
+  }
+  
+  public function unowns(){
+    $this->set('unks',$this->Unknown->get_all_the_things());
   }
   
   public function article_work(){

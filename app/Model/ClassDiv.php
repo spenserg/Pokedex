@@ -14,6 +14,12 @@ class ClassDiv extends AppModel {
     return $cc['ClassDiv'];
   }
   
+  function get_nickname($id){
+    if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
+      return null;
+    return ($cc['ClassDiv']['nickname']=="")?NULL:$cc['ClassDiv']['nickname'];
+  }
+  
   function get_name($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
