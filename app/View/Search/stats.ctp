@@ -12,12 +12,12 @@
       <td class="warning" style="text-align:center"><b><?=$total_list[$yr_key]['total']?></b></td>  
       <td class="danger" style="text-align:center"><b><?=$total_list[$yr_key]['overall']?></b></td>
 <?php foreach($phydiv_totals as $key=>$val){ ?>
-      <td style="text-align:center">
+      <td style="text-align:center"<?=($total_list[$yr_key][$key] != 0)?' class="info"':''?>">
 <?php if ($total_list[$yr_key][$key] != 0){
 echo '<b><a href="/search/search/1?phydiv='.$key.
       '&start_date='.$yr_key.'-01-01&end_date='.$yr_key.'-12-31'.'">'.
       $total_list[$yr_key][$key].'</a></b>';
-      }else{ echo "0"; } ?>
+      }else{ echo "-"; } ?>
       </td>
 <?php } ?>
     </tr>
@@ -50,16 +50,17 @@ echo '<b><a href="/search/search/1?phydiv='.$key.
       <td class="warning" style="text-align:center"><?=($total_list[$yr_key][$mon_key] != 0)?('<b><a href="/search/search/1?start_date='.
         $yr_key.'-'.$mon_key.'-01'.'&end_date='.date("Y-m-t",strtotime($yr_key.'-'.$mon_key.'-01')).
         '">'.$total_list[$yr_key][$mon_key].'</a></b>'):"0"?></td>
-<?php foreach($mon_arr as $phydiv_key=>$wal){ ?>
+<?php foreach($mon_arr as $phydiv_key=>$wal){ if ($phydiv_key != 'average'){ ?>
       <td style="text-align:center"<?php
 if ($wal>0){
-  echo'class="info"><a href="/search/search/1?phydiv='.$phydiv_key.
+  echo ($wal > $yr_arr[$mon_key]['average'])?'class="danger"':'class="info"';
+  echo'><a href="/search/search/1?phydiv='.$phydiv_key.
         '&start_date='.$yr_key.'-'.$mon_key.'-01'.
         '&end_date='.date("Y-m-t",strtotime($yr_key.'-'.$mon_key.'-01')).'">'.$wal.'</a>';
 }else{
   echo">-";
 } ?></td>
-<?php } ?>
+<?php } } ?>
     </tr>
 <?php } ?>
     <tr><td><b>Total</b></td><td style="text-align:center"><b><?=$total_list[$yr_key]['total']?></b></td>      

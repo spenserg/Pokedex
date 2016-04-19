@@ -11,17 +11,38 @@ class SearchController extends AppController {
   }
   
   public function index(){    
-    $this->Specimen->update_db(1);
+    $this->Specimen->update_db(0);
     //$this->Species->update_common_names();
     
     //debug($this->Specimen->find('all',array('conditions'=>array('state'=>null))));
     //debug($this->Specimen->get_info_regex(APP."webroot/img/pokedex/zz animals/Chordata/Actinopterygii (Bony Fishies)/Mugiliformes/aa Mugiliformes pic info copy.html"));
     //debug(file_get_contents(APP."webroot".DS."img".DS."pokedex".DS."testfile copy.html"));
-                
+    
+    //
+    // USE TO FIND DUPLICATES
+    //
+    /*
+    $barr = array();
+    $x = $this->Species->find('all');
+    foreach($x as $val){
+      if (count($this->Species->find('all',array('conditions'=>array('genus'=>$val['Species']['genus'],'species'=>$val['Species']['species']))))>1){
+        if (!in_array($val['Species']['genus']." ".$val['Species']['species'],$barr)){
+          array_push($barr,$val['Species']['genus']." ".$val['Species']['species']);
+        }
+      }
+    }
+    asort($barr);
+    debug($barr);
+     * 
+     */
+    
+         
     $this->set('caught',count($this->Species->find('all',array('conditions'=>array('is_wild'=>1)))));
     $this->set('seen',count($this->Species->find('all')));
     
     //debug($this->Family->get_spider_fams());
+    
+    $this->set('stuff',(count($_POST))?$this->Country->wikiparse($_POST['stuff']):"");
     
   }
   
@@ -93,6 +114,7 @@ class SearchController extends AppController {
         $yr_list[$yr_key][$xal['Division']['name']] = 0;
       }
       foreach($yr_arr as $mon_key=>$phy_arr){
+        $avg = 0;
         foreach($phy_arr as $phy_key=>$phy_tots){
           $yr_list[$yr_key][$phy_key] += $phy_tots;
           if (isset($phydiv_totals[$phy_key])){
@@ -103,6 +125,18 @@ class SearchController extends AppController {
         }
       }
     }
+    
+    //Find average for each month
+    foreach($month_list as $monkey=>$mons){
+      foreach($mons as $physkey=>$phys){
+        $avg = 0;
+        foreach($phys as $monval){
+          $avg += $monval;
+        }
+        $month_list[$monkey][$physkey]['average'] = ceil($avg/(count($phys)));
+      }
+    }
+    
     arsort($phydiv_totals);
     $this->set('phydiv_totals',$phydiv_totals);
     $this->set('list',$month_list);
@@ -156,7 +190,7 @@ class SearchController extends AppController {
     }
     foreach($info as $key=>$val){
       $info[$key]['Specimen']['country'] = $this->Country->get_name($val['Specimen']['iso']);
-      debug($info[$key]['Specimen']['filename_for_calc'] = array_pop(explode("/",$info[$key]['Specimen']['filename'])));
+      $info[$key]['Specimen']['filename_for_calc'] = array_pop(explode("/",$info[$key]['Specimen']['filename']));
     }
     if ($species = $this->Species->find('first',array('conditions'=>array('genus'=>$name_arr[0],'species'=>$name_arr[1])))){
       $this->set('common_name',$species['Species']['common_name']);
@@ -342,9 +376,14 @@ class SearchController extends AppController {
       unset($spec_list_cond['species_id']);
       unset($spec_list_cond['species LIKE']);
       
-      foreach($this->Unknown->find('all',array('conditions'=>$spec_list_cond)) as $val){
-        $val['Unknown']['species'] = "sp.";
-        array_push($spec_list,$val['Unknown']);
+      $unknown_list = $this->Unknown->find('all',array('conditions'=>$spec_list_cond));
+      $all_unknowns = $this->Unknown->find('all');
+      
+      if (!(count($unknown_list) == count($all_unknowns))){
+        foreach($unknown_list as $val){
+          $val['Unknown']['species'] = "sp.";
+          array_push($spec_list,$val['Unknown']);
+        }
       }
       
       foreach($spec_list as $val){

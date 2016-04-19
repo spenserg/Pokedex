@@ -319,9 +319,9 @@ class Specimen extends AppModel {
       foreach($wal as $key=>$val){
         if (is_int($key)){ //not family name
           if ($val['species'] != "sp" && $val['species'] != "sp." && $val['species'] != "species"){
-            if (!($specimen = $this->Specimen->find('first',array('conditions'=>array('filename'=>$val['filename']))))){
-              $this->Specimen->create();
-              $this->Specimen->save(array(
+            if (!($specimen = $this->find('first',array('conditions'=>array('filename'=>$val['filename']))))){
+              $this->create();
+              $this->save(array(
                 'genus'=>$val['genus'],
                 'species'=>$val['species'],
                 'family'=>$val['family'],
@@ -333,12 +333,12 @@ class Specimen extends AppModel {
                 'filename'=>$val['filename'],
                 'notes'=>$val['notes']
               ));
-              $new_spec_id = $this->Specimen->id;
+              $new_spec_id = $this->id;
               debug("Specimen added: ".$val['filename']);
               if ($spec = $this->Species->find('first',array('conditions'=>array('genus'=>$val['genus'],'species'=>$val['species'])))){
-                $this->Specimen->read(null,$new_spec_id);
-                $this->Specimen->set('species_id',$spec['Species']['id']);
-                $this->Specimen->save();
+                $this->read(null,$new_spec_id);
+                $this->set('species_id',$spec['Species']['id']);
+                $this->save();
                 if ($val['is_wild']){
                   $this->Species->read(null,$spec['Species']['id']);
                   $this->Species->set('is_wild',1);
@@ -361,24 +361,24 @@ class Specimen extends AppModel {
                 ));
                 $this->Species->save();
                 $new_species_id = $this->Species->id;
-                $this->Specimen->read(null,$new_spec_id);
-                $this->Specimen->set('species_id',$new_species_id);
-                $this->Specimen->save();
+                $this->read(null,$new_spec_id);
+                $this->set('species_id',$new_species_id);
+                $this->save();
                 debug("New Species: ".$val['genus']." ".$val['species']);
               }
             }else{ //specimen already in db
-              $this->Specimen->read(null,$specimen['Specimen']['id']);
-              $this->Specimen->set(array(
+              $this->read(null,$specimen['Specimen']['id']);
+              $this->set(array(
                 'date_found'=>$val['date_found'],
                 'location'=>$val['location'],
                 'state'=>$val['state'],
                 'is_wild'=>$val['is_wild'],
                 'notes'=>$val['notes']
               ));
-              $this->Specimen->save();
+              $this->save();
               $lowest_date = date("Y-m-d");
               $spec_is_wild = 0;
-              foreach($this->Specimen->find('all',array('conditions'=>array('species_id'=>$specimen['Specimen']['species_id']))) as $ral){
+              foreach($this->find('all',array('conditions'=>array('species_id'=>$specimen['Specimen']['species_id']))) as $ral){
                 $t = explode("-",$ral['Specimen']['date_found']);
                 $u = explode("-",$lowest_date);
                 if (mktime(0,0,1,$t[1],$t[2],$t[0]) < mktime(0,0,1,$u[1],$u[2],$u[0])){
@@ -506,7 +506,7 @@ class Specimen extends AppModel {
 
   function find_by_date($start_date,$end_date){
     $spec = array();
-    foreach($this->Specimen->find('all',array('conditions'=>array('date_found >='=>$start_date,'date_found <='=>$end_date))) as $val){
+    foreach($this->find('all',array('conditions'=>array('date_found >='=>$start_date,'date_found <='=>$end_date))) as $val){
       $val['Specimen']['fam_dir'] = $this->Family->get_dir($val['Specimen']['family'],false);
       $spec[$val['Specimen']['id']] = $val['Specimen'];
     }
