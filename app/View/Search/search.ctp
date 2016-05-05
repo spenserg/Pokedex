@@ -7,6 +7,7 @@ No matches found.
 Click on a column to sort:
 <table class="sortable" style="width:100%; text-align:center; background-color:white; border: 1px solid black;">
   <tr class="active">
+    <td><b>Picture</b></td>
     <td><b>Name</b></td><td><b>Common Name</b></td>
     <td><b>Division</b></td><td><b>Family</b></td>
     <td><b>Found</b></td><td><b>State</b></td>
@@ -14,6 +15,8 @@ Click on a column to sort:
   </tr>
 <?php foreach ($results as $key=>$val){ ?>
   <tr>
+<?php $short = substr($val['filename'],strpos($val['filename'],'/img')); ?>
+    <td><img src="<?=$short?>" style="width:100px;height:100px;"></td>
     <td><a href="/search/view?dir=<?=$val['filename']?>"><?=$key?></a></td>
     <td><?=$val['common_name']?></td>
     <td><?=$val['phydiv']?></td>
