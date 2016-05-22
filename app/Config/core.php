@@ -221,7 +221,7 @@
  */
 	Configure::write('Session', array(
 		'defaults' => 'cake',
-		'cookie' => 'flyways',
+		'cookie' => 'pokedex',
 		'ini' => array('session.cookie_secure' => 0),
 		'timeout' => 90,  // minutes of inactivity
 		'cookieTimeout' => 0,  // cookie expiration date (0 => Session)

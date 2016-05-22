@@ -11,6 +11,7 @@ class Phylum extends AppModel {
   function get_by_id($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
+    $cc['Phylum']['folder_name'] = ($cc['Phylum']['nickname'] == "" || $cc['Phylum']['nickname'] == null)?$cc['Phylum']['name']:($cc['Phylum']['name']." (".$cc['Phylum']['nickname'].")");
     return $cc['Phylum'];
   }
   

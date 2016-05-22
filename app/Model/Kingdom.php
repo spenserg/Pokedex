@@ -10,6 +10,7 @@ class Kingdom extends AppModel {
   function get_by_id($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
+    $cc['Kingdom']['folder_name'] = "zz ".$cc['Kingdom']['name'];
     return $cc['Kingdom'];
   }
   

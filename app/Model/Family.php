@@ -11,13 +11,14 @@ class Family extends AppModel {
   function get_by_id($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
+    $cc['Family']['folder_name'] = ($cc['Family']['nickname'] == "" || $cc['Family']['nickname'] == null)?$cc['Family']['name']:($cc['Family']['name']." (".$cc['Family']['nickname'].")");
     return $cc['Family'];
   }
   
   function get_by_name($name){
     if (!($cc = $this->find('first',array('conditions'=>array('name'=>$name)))))
       $cc = $this->find('first',array('conditions'=>array('name'=>array_shift(explode(" ",$name)))));
-    return $cc['Family'];
+    return $this->get_by_id($cc['Family']['id']);
   }
   
   function get_nickname($id){

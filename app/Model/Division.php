@@ -10,6 +10,7 @@ class Division extends AppModel {
   function get_by_id($id){
     if (!($div = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
+    $div['Division']['folder_name'] = ($div['Division']['nickname'] == null || $div['Division']['nickname'] == "")?$div['Division']['name']:($div['Division']['name']." (".$div['Division']['nickname'].")");
     return $div['Division'];
   }
   

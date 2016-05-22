@@ -8,6 +8,72 @@
 class Specimen extends AppModel {
   public $useTable = 'specimen';
   
+  function get_everything(){
+    $everything = array();
+    foreach($this->find('all') as $spec){
+      if ($this->has_phylum($spec['Specimen']['id'])){
+        $kin = $this->get_kingdom($spec['Specimen']['id']);
+        $phy = $this->get_phylum($spec['Specimen']['id']);
+        $cls = $this->get_classdiv($spec['Specimen']['id']);
+        $ord = $this->get_order($spec['Specimen']['id']);
+        $fam = $this->get_family($spec['Specimen']['id']);
+        if (!isset($everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']]))
+          $everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']] = array();
+        array_push($everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']],$spec['Specimen']['filename']);
+        ksort($everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']]);
+      }else{
+        $kin = $this->get_kingdom($spec['Specimen']['id']);
+        $div = $this->get_division($spec['Specimen']['id']);
+        $ord = $this->get_order($spec['Specimen']['id']);
+        $fam = $this->get_family($spec['Specimen']['id']);
+        if (!isset($everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']]))
+          $everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']] = array();
+        array_push($everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']],$spec['Specimen']['filename']);
+        ksort($everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']]);
+      }
+    }
+    foreach($this->Unknown->find('all') as $unk){
+      if ($this->Family->has_phylum($unk['Unknown']['family'])){
+        $kin = $this->Family->get_kingdom($unk['Unknown']['family']);
+        $phy = $this->Family->get_phylum($unk['Unknown']['family']);
+        $cls = $this->Family->get_classdiv($unk['Unknown']['family']);
+        $ord = $this->Family->get_order($unk['Unknown']['family']);
+        $fam = $this->Family->get_by_id($unk['Unknown']['family']);
+        if (!isset($everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']]))
+          $everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']] = array();
+        array_push($everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']],$unk['Unknown']['filename']);
+        ksort($everything[$kin['folder_name']][$phy['folder_name']][$cls['folder_name']][$ord['folder_name']][$fam['folder_name']]);
+      }else{
+        $kin = $this->Family->get_kingdom($unk['Unknown']['family']);
+        $div = $this->Family->get_division($unk['Unknown']['family']);
+        $ord = $this->Family->get_order($unk['Unknown']['family']);
+        $fam = $this->Family->get_by_id($unk['Unknown']['family']);
+        if (!isset($everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']]))
+          $everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']] = array();
+        array_push($everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']],$unk['Unknown']['filename']);
+        ksort($everything[$kin['folder_name']][$div['folder_name']][$ord['folder_name']][$fam['folder_name']]);
+      }
+    }
+    return $everything;
+  }
+
+  function find_missing($dir = "",$arr = array()){
+    if ($dir == "")
+      $dir = APP."webroot".DS."img".DS."pokedex".DS;
+    $missing = array();
+    if (!count($arr))
+      $arr = $this->get_everything();
+    foreach($arr as $key=>$val){
+      if (is_array($val)){
+        $missing = $this->find_missing($dir.$key.DS,$val);
+      }else{
+        if (!file_exists($dir.$val))
+          array_push($missing,$dir.$val);
+      }
+    }
+    return $missing;
+  }
+  
   function get_by_id($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;

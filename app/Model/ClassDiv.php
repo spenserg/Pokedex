@@ -11,6 +11,7 @@ class ClassDiv extends AppModel {
   function get_by_id($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
+    $cc['ClassDiv']['folder_name'] = ($cc['ClassDiv']['nickname'] == "" || $cc['ClassDiv']['nickname'] == null)?$cc['ClassDiv']['name']:($cc['ClassDiv']['name']." (".$cc['ClassDiv']['nickname'].")");
     return $cc['ClassDiv'];
   }
   

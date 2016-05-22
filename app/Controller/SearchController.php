@@ -13,37 +13,16 @@ class SearchController extends AppController {
   public function index(){    
     $this->Specimen->update_db(0);
     //$this->Species->update_common_names();
+    //debug($this->Specimen->find_missing());
     
     //debug($this->Specimen->find('all',array('conditions'=>array('state'=>null))));
     //debug($this->Specimen->get_info_regex(APP."webroot/img/pokedex/zz animals/Chordata/Actinopterygii (Bony Fishies)/Mugiliformes/aa Mugiliformes pic info copy.html"));
     //debug(file_get_contents(APP."webroot".DS."img".DS."pokedex".DS."testfile copy.html"));
-    
-    //
-    // USE TO FIND DUPLICATES
-    //
-    /*
-    $barr = array();
-    $x = $this->Species->find('all');
-    foreach($x as $val){
-      if (count($this->Species->find('all',array('conditions'=>array('genus'=>$val['Species']['genus'],'species'=>$val['Species']['species']))))>1){
-        if (!in_array($val['Species']['genus']." ".$val['Species']['species'],$barr)){
-          array_push($barr,$val['Species']['genus']." ".$val['Species']['species']);
-        }
-      }
-    }
-    asort($barr);
-    debug($barr);
-     * 
-     */
-    
          
     $this->set('caught',count($this->Species->find('all',array('conditions'=>array('is_wild'=>1)))));
     $this->set('seen',count($this->Species->find('all')));
     
-    //debug($this->Family->get_spider_fams());
-    
-    $this->set('stuff',(count($_POST))?$this->Country->wikiparse($_POST['stuff']):"");
-    
+    //debug($this->Family->get_spider_fams());    
   }
   
   public function unowns(){
@@ -357,11 +336,13 @@ class SearchController extends AppController {
         //if $_GET
         $spec_list_cond['date_found >='] = $_GET['start_date'];
         $spec_list_cond['date_found <='] = $_GET['end_date'];
-        if ($phy = $this->Phylum->find('all',array('conditions'=>array('name'=>$_GET['phydiv'])))){
-          $spec_list_cond['family'] = $this->Phylum->get_fam_ids($phy[0]['Phylum']['id']);
-        }else{
-          $div = $this->Division->find('all',array('conditions'=>array('name'=>$_GET['phydiv'])));
-          $spec_list_cond['family'] = $this->Division->get_fam_ids($div[0]['Division']['id']);
+        if (isset($_GET['phydiv'])){
+          if ($phy = $this->Phylum->find('all',array('conditions'=>array('name'=>$_GET['phydiv'])))){
+            $spec_list_cond['family'] = $this->Phylum->get_fam_ids($phy[0]['Phylum']['id']);
+          }else{
+            $div = $this->Division->find('all',array('conditions'=>array('name'=>$_GET['phydiv'])));
+            $spec_list_cond['family'] = $this->Division->get_fam_ids($div[0]['Division']['id']);
+          }
         }
         $spec_list_pre = $this->Species->find('all',array('conditions'=>$spec_list_cond));
       }
@@ -437,6 +418,32 @@ class SearchController extends AppController {
     $this->set('results',$list);
     $this->set('post_info',$this->request->is("post")?$_POST:array());
     $this->set('get_info',isset($_GET)?$_GET:array());
+  }
+
+  public function songs(){
+    
+    debug($this->Song->find('all',array('conditions'=>array('title LIKE'=>"%(%"))));
+      
+    //debug($matches);
+
+    /*
+    $matches = array();
+    preg_match_all("/([\S\s]*\S)[\s]*([0-9]*\:[0-9][0-9])\s[\s]*([\s\S]*)\n/U",
+      file_get_contents(APP."webroot/files/all_songs.txt"),
+      $matches);
+    $songs = array();
+    for ($x = 0; $x <= (count($matches[0])-1); $x++) {
+      $this->Song->create();
+      $this->Song->save(array(
+        'title'=>$matches[1][$x],
+        'artist'=>$matches[3][$x],
+        'time'=>$matches[2][$x],
+        'artist_is_complex'=>((strpos($matches[3][$x],",")===false && strpos($matches[3][$x],"feat.")===false)?0:1)
+      ));
+    }
+     * 
+     */
+
   }
   
   public function db_browse($division = null, $id = null){

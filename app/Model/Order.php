@@ -10,13 +10,14 @@ class Order extends AppModel {
   function get_by_id($id){
     if (!($cc = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return null;
+    $cc['Order']['folder_name'] = ($cc['Order']['nickname'] == "" || $cc['Order']['nickname'] == null)?$cc['Order']['name']:($cc['Order']['name']." (".$cc['Order']['nickname'].")");
     return $cc['Order'];
   }
   
   function get_by_name($name){
     if (!($cc = $this->find('first',array('conditions'=>array('name'=>$name)))))
       return null;
-    return $cc['Order'];
+    return $this->get_by_id($cc['Order']['id']);
   }
     
   function needs_update($order, $filename){
