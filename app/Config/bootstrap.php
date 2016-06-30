@@ -143,6 +143,7 @@ function money($money){
 }
 
 function get_html($url){
+  ini_set('max_execution_time', 300);
   $c = curl_init($url);
   curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($c, CURLOPT_RETURNTRANSFER, true);

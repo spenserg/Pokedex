@@ -22,7 +22,40 @@ class SearchController extends AppController {
     $this->set('caught',count($this->Species->find('all',array('conditions'=>array('is_wild'=>1)))));
     $this->set('seen',count($this->Species->find('all')));
     
-    //debug($this->Family->get_spider_fams());    
+    $str = "";
+    /*
+    $spider_arr = array();
+    $fams = $this->Family->get_spider_fams()[1];
+    for ($x=0; $x<100; $x++){
+      if (array_key_exists($x,$fams)){
+      $val = $fams[$x];
+      $spider_arr[$val] = array();
+      $genera = array();
+      $html = get_html('http://www.wsc.nmbe.ch/genlist/'.($x+1).'/'.$val);
+      preg_match_all("%<strong>([\s\S]*)<\/strong>%U",$html,$genera);
+      foreach($genera[1] as $wal){
+        array_push($spider_arr[$val],str_replace("<i>","",str_replace("</i>","",$wal)));
+      }
+      }
+    }
+    $str = "";    
+    foreach($spider_arr as $key=>$val){
+      $fam_str = "==[[".$key."]]==<br/>{{refbegin|3}}<br/>";
+      $gen_str = "";
+      $gen = 0;
+      foreach($val as $wal){
+        if (strpos(get_html('https://en.wikipedia.org/wiki/'.$wal),'Wikipedia does not have an article with this exact name')!==false){
+          $gen_str .= "#[[".$wal."]]<br/>";
+          $gen++;
+        }
+      }
+      if ($gen_str != "")
+        $str .= $fam_str.$gen_str."<br/>{{refend}}<br/><br/>";
+    }
+     */
+    
+    $this->set('disp',$str);
+    
   }
   
   public function unowns(){

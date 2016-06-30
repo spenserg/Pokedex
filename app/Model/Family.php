@@ -891,6 +891,7 @@ class Family extends AppModel {
     $rating = array();
     $spider_fams = array();
     
+    /*
     foreach($html[1] as $val){
       $talk_html = get_html('https://en.wikipedia.org/wiki/Talk:'.$val);
       preg_match("%Rated ([\s\S]*)-class%U",$talk_html,$rating);
@@ -905,9 +906,13 @@ class Family extends AppModel {
       }else{
         $spider_fams[$val]="Unknown";
       }
-    }
-    asort($spider_fams);
-    return $spider_fams;
+     }
+     asort($spider_fams);
+     * 
+     */
+    //}
+    
+    return $html;
   }
 
 }
