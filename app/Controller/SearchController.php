@@ -10,8 +10,22 @@ class SearchController extends AppController {
     parent::beforeFilter();
   }
   
-  public function index(){    
-    $this->Specimen->update_db(0);
+  public function index(){
+    
+    /*
+    foreach($this->Species->find('all') as $val){
+      if (!$this->Specimen->find('first',array('conditions'=>array('species_id'=>$val['Species']['id']))))
+        debug($val['Species']);
+    }
+     */ 
+    
+
+    $str = "";
+    //foreach($this->Species->find('all',array('order'=>'genus')) as $val){
+      //$str .=$val['Species']['genus']." ".$val['Species']['species']."<br/>";
+    //}
+    
+    $this->Specimen->update_db(1);
     //$this->Species->update_common_names();
     //debug($this->Specimen->find_missing());
     
@@ -22,7 +36,6 @@ class SearchController extends AppController {
     $this->set('caught',count($this->Species->find('all',array('conditions'=>array('is_wild'=>1)))));
     $this->set('seen',count($this->Species->find('all')));
     
-    $str = "";
     /*
     $spider_arr = array();
     $fams = $this->Family->get_spider_fams()[1];
@@ -60,6 +73,33 @@ class SearchController extends AppController {
   
   public function unowns(){
     $this->set('unks',$this->Unknown->get_all_the_things());
+  }
+  
+  public function download_complete(){
+    $file = APP.'webroot'.DS.'files'.DS;
+    
+    //debug($file);
+    
+    //if ($handle = opendir($file)) {
+      
+      $file .= 'blog.zip';
+    
+    header('Content-type: application/zip');
+    header('Content-Disposition: attachment; filename="blog.zip"');
+    readfile($file);
+    
+    //header("Cache-Control: public");
+    //header("Content-Description: File Transfer");
+    //header("Content-Disposition: attachment; filename=$file");
+    //header("Content-Type: application/zip");
+    //header("Content-Transfer-Encoding: binary");
+    
+    // read the file from disk
+    //readfile($file);
+    //closedir($handle);
+    //}
+      
+
   }
   
   public function article_work(){

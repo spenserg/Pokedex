@@ -38,6 +38,15 @@ class Unknown extends AppModel {
     return $unks;
   }
   
+  function pic_check(){
+    foreach($this->find('all') as $val){
+      if (!file_exists($this->Family->get_dir($val['Unknown']['family']).$val['Unknown']['filename'])){
+        $this->delete($val['Unknown']['id']);
+        debug("Unknown Deleted: ".$val['Unknown']['filename']);
+      }
+    }
+  }
+  
   function get_by_id($id){
     if (!($unk = $this->find('first',array('conditions'=>array('id'=>$id)))))
       return NULL;
@@ -79,6 +88,13 @@ class Unknown extends AppModel {
     $order = $this->Family->get_order($data['family']);
     if (!($unk = $this->find('first',array('conditions'=>array('family'=>$data['family'],'filename'=>$data['filename']))))){
       debug('unknown added: '.$data['genus'].' sp. ('.$this->Family->get_name($data['family']).')');
+      foreach($this->find('all',array('conditions'=>array('genus'=>$data['genus']))) as $bal){
+        if (!file_exists($this->Family->get_dir($data['family']).$bal['Unknown']['filename'])){
+          $this->deleteAll(array('id'=>$bal['Unknown']['id']));
+          debug("Unknown deleted: ".$bal['Unknown']['filename']);
+        }
+      }
+      
       $this->create();
       $this->set(array(
         'order'=>$order['id'],

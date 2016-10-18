@@ -10,5 +10,5 @@ if (strlen($val['Specimen']['filename_for_calc']) > (strlen($name) + 4)){
 
 Taken on <?=date("M d, Y",strtotime($val['Specimen']['date_found']))?><br/>
 <?=$val['Specimen']['location']?>, <?=($val['Specimen']['state']=="XX")?"":$val['Specimen']['state'].', '?><?=$val['Specimen']['country']?><br/>
-<img src="<?=$fam_dir.$val['Specimen']['filename']?>" width="700">
+<img src="<?=$fam_dir.$val['Specimen']['filename']?>" width="700" draggable="true">
 <?php } } ?>

@@ -5,29 +5,66 @@
 No matches found.
 <?php }else{ ?>
 Click on a column to sort:
-<table class="sortable" style="width:100%; text-align:center; background-color:white; border: 1px solid black;">
-  <tr class="active">
-    <td><b>Picture</b></td>
-    <td><b>Name</b></td><td><b>Common Name</b></td>
-    <td><b>Division</b></td><td><b>Family</b></td>
-    <td><b>Found</b></td><td><b>State</b></td>
-    <td><b>Country</b></td><td><b>Wild</b></td>
-  </tr>
+<div class="row">
+  <div class="col-xs-12 hidden-sm hidden-md hidden-lg hidden-xl">
+    <table class="sortable" style="width:100%; text-align:center; background-color:white; border: 1px solid black;">
+      <tr class="active"><td><b>Picture</b></td><td><b>Name</b></td><td><b>Wild</b></td></tr>
 <?php foreach ($results as $key=>$val){ ?>
-  <tr>
-<?php $short = substr($val['filename'],strpos($val['filename'],'/img')); ?>
-    <td><img src="<?=$short?>" style="width:100px;height:100px;"></td>
-    <td><a href="/search/view?dir=<?=$val['filename']?>"><?=$key?></a></td>
-    <td><?=$val['common_name']?></td>
-    <td><?=$val['phydiv']?></td>
-    <td><?=$val['family_name']?></td>
-    <td><?=$val['date']?></td>
-    <td><?=($val['state']=="XX")?"--":$val['state']?></td>
-    <td><?=$val['iso']?></td>
-    <td><?=$val['is_wild']?></td>
-  </tr>
+      <tr>
+        <td><img src="<?=substr($val['filename'],strpos($val['filename'],'/img'))?>" style="width:100px;height:100px;"></td>
+        <td><a href="/search/view?dir=<?=$val['filename']?>"><?=$key?></a></td>
+        <td><?=$val['is_wild']?></td>
+      </tr>
 <?php } ?>
-</table>
+    </table>
+  </div>
+</div><div class="row">
+  <div class="hidden-xs col-sm-12 hidden-md hidden-lg hidden-xl">
+    <table class="sortable" style="width:100%; text-align:center; background-color:white; border: 1px solid black;">
+      <tr class="active">
+        <td><b>Picture</b></td><td><b>Name</b></td>
+        <td><b>Common Name</b></td><td><b>Family</b></td>
+        <td><b>Found</b></td><td><b>State</b></td>
+        <td><b>Wild</b></td></tr>
+<?php foreach ($results as $key=>$val){ ?>
+      <tr>
+        <td><img src="<?=substr($val['filename'],strpos($val['filename'],'/img'))?>" style="width:100px;height:100px;"></td>
+        <td><a href="/search/view?dir=<?=$val['filename']?>"><?=$key?></a></td>
+        <td><?=$val['common_name']?></td>
+        <td><?=$val['family_name']?></td>
+        <td><?=$val['date']?></td>
+        <td><?=($val['state']=="XX")?"--":$val['state']?></td>
+        <td><?=$val['is_wild']?></td>
+      </tr>
+<?php } ?>
+    </table>
+  </div>
+</div><div class="row">
+  <div class="hidden-xs hidden-sm col-md-12">
+    <table class="sortable" style="width:100%; text-align:center; background-color:white; border: 1px solid black;">
+      <tr class="active">
+        <td><b>Picture</b></td>
+        <td><b>Name</b></td><td><b>Common Name</b></td>
+        <td><b>Division</b></td><td><b>Family</b></td>
+        <td><b>Found</b></td><td><b>State</b></td>
+        <td><b>Country</b></td><td><b>Wild</b></td>
+      </tr>
+<?php foreach ($results as $key=>$val){ ?>
+      <tr>
+        <td><img src="<?=substr($val['filename'],strpos($val['filename'],'/img'))?>" style="width:100px;height:100px;"></td>
+        <td><a href="/search/view?dir=<?=$val['filename']?>"><?=$key?></a></td>
+        <td><?=$val['common_name']?></td>
+        <td><?=$val['phydiv']?></td>
+        <td><?=$val['family_name']?></td>
+        <td><?=$val['date']?></td>
+        <td><?=($val['state']=="XX")?"--":$val['state']?></td>
+        <td><?=$val['iso']?></td>
+        <td><?=$val['is_wild']?></td>
+      </tr>
+<?php } ?>
+    </table>
+  </div>
+</div>
 <?php } ?>
 </div>
 <?php } ?>

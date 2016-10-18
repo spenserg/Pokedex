@@ -1,7 +1,3 @@
-<h1>Welcome to the Flyways Reservation System</h1>
+<h1>Welcome to the Home Page</h1>
 
-
-<div style="margin-top:40px">
-  <a href="/search">Search for Availability</a>
-</div>
-
+<a href="/search/download_complete">Download Folder</a>

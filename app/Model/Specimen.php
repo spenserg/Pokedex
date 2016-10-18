@@ -376,6 +376,7 @@ class Specimen extends AppModel {
         }
       }
     }
+    $this->Unknown->pic_check();
   }
 
   function update_db_with_info($filename){

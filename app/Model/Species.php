@@ -37,7 +37,6 @@ class Species extends AppModel {
       if (strcmp($val['Species']['common_name'],$val['Species']['genus'].' '.$val['Species']['species']) == 0)
         array_push($specs,$val['Species']['common_name']);
     }
-    //array_push($specs,null);
     
     $null_specs = $this->Species->find('all',array('conditions'=>array('common_name'=>$specs)));
     foreach($null_specs as $val){
